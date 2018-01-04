@@ -1,15 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script src="lib/d3.min.js"></script>
-    <script src=sketch.js></script>
 	<title>d3 tutorial</title>
+
+	<script src="lib/d3.min.js">
+		console.log("D3 script has loaded");
+	</script>
+
+    <script src=sketch.js></script>
+    <style type="text/css">
+    	body{
+    		background-color: #ccc;
+    		width: 100%;
+    	}
+
+    	#chart{
+    		background-color: #ccc;
+    		width: 1000px;
+    		height: 500px;
+    		margin:	50px auto;
+    		border: solid 1px #000;
+    	}
+    	svg{
+    		background-color: #fff;
+    	}
+    </style>
 </head>
 <body>
 
 	<div id="chart"></div>
 	<script type="text/javascript">
-		console.log("D3 script has loaded")	
+		var width = 1000;
+		var height = 500;
+
+		var svg = d3.select('#chart')
+			.append('svg')
+			.attr('width', '1000px')
+			.attr('height', '500px');
+
+		var rect = svg.append('rect')
+			.attr('x', 100)
+			.attr('y', 100)
+			.attr('width', 100)
+			.attr('height', 100)
+			.style('fill', '#666');
+		var circle = svg.append('circle')
+			.attr('cx', 400)
+			.attr('cy', 400)
+			.attr('r',50)
+			.style('fill', '#999');
+
+		var line = svg.append('line')
+		    .attr('x1', 100)
+		    .attr('y1', 100)
+		    .attr('x2', 400)
+		    .attr('y2', 300)
+		    .style('stroke', '#000');
+
 	</script>
 </body>
 </html>
