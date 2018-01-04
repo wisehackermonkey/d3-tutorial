@@ -36,6 +36,8 @@
 	<script type="text/javascript">
 		var width = 1000;
 		var height = 500;
+		var margin = 30;
+
 		var circle;
 
 		//add svg to the div with class 'chart'
@@ -46,10 +48,6 @@
 			.attr('height', `${height}px`);
 
 
-		xScale = d3.scaleLinear()
-			.domain([0,30])
-			.range([0,400]);
-
 
 
 
@@ -57,9 +55,31 @@
 		d3.csv('boston-housing.csv', function(error,d) {
 			if(error){
 				console.log(error);
-			} 
+			}
 
-			console.table(d);
+
+			//show table form of csv file
+			//console.table(d);
+ 
+			xMinMax = d3.extent(d, function(d){
+				return parseFloat(d.poor);
+			});
+			//console.table(xMinMax);
+			// yMinMax = d3.extent(d, function(d){
+			// 	return parseFloat(d.rooms);
+			// });
+			// rMinMax = d3.extent(d, function(d){
+			// 	return parseFloat(d.value);
+			// });
+
+			//map the largest values and the lowest 
+			//values within the graph to
+			//fit within Min xMinMax[0], Max xMinMax[1]
+			xScale = d3.scaleLinear()
+				.domain([xMinMax[0],xMinMax[1]])   //X : width
+				.range([margin,width - margin]); //Y : height
+
+
 			//add circles based on the csv file's
 			//'poor' column and 'nox' column
 			//put the circles at x:poor[N], y:nox[N]
@@ -69,13 +89,13 @@
 				.append('circle')
 				.attr('class', 'dot' )
 				.attr('cx', function(d) { 
-					return d.poor * 30; 
+					return xScale(d.poor); 
 				})
 				.attr('cy', function(d) {
 				 return d.rooms * 50; 
 				})
 				.attr('r', function(d) { 
-					return d.poor; 
+					return d.value/2; 
 				})
 				.attr('fill', '#000')
 				.style('opacity', '0.5');
