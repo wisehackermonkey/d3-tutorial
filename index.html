@@ -65,12 +65,12 @@
 				return parseFloat(d.poor);
 			});
 			//console.table(xMinMax);
-			// yMinMax = d3.extent(d, function(d){
-			// 	return parseFloat(d.rooms);
-			// });
-			// rMinMax = d3.extent(d, function(d){
-			// 	return parseFloat(d.value);
-			// });
+			yMinMax = d3.extent(d, function(d){
+				return parseFloat(d.rooms);
+			});
+			rMinMax = d3.extent(d, function(d){
+				return parseFloat(d.value);
+			});
 
 			//map the largest values and the lowest 
 			//values within the graph to
@@ -79,6 +79,13 @@
 				.domain([xMinMax[0],xMinMax[1]])   //X : width
 				.range([margin,width - margin]); //Y : height
 
+			yScale = d3.scaleLinear()
+				.domain([yMinMax[0],yMinMax[1]])
+				.range([margin,height - margin]);
+
+			rScale = d3.scaleLinear()
+				.domain([rMinMax[0],rMinMax[1]])
+				.range([2,10]);
 
 			//add circles based on the csv file's
 			//'poor' column and 'nox' column
@@ -92,10 +99,10 @@
 					return xScale(d.poor); 
 				})
 				.attr('cy', function(d) {
-				 return d.rooms * 50; 
+				 return yScale(d.rooms); 
 				})
 				.attr('r', function(d) { 
-					return d.value/2; 
+					return rScale(d.value); 
 				})
 				.attr('fill', '#000')
 				.style('opacity', '0.5');
