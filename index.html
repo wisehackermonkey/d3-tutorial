@@ -79,8 +79,15 @@
 				.domain([xMinMax[0],xMinMax[1]])   //X : width
 				.range([margin,width - margin]); //Y : height
 
+			//because computers render y comming
+			//down instad of 0 bottom to ∞ top
+			//its            ∞ bottom to 0 top
+			//the fix is to invert the range 
+			//thouse switching the posistion of
+			//top and bottom to be correct
+			//yMinMax[0],yMinMax[1] => yMinMax[1],yMinMax[0]
 			yScale = d3.scaleLinear()
-				.domain([yMinMax[0],yMinMax[1]])
+				.domain([yMinMax[1],yMinMax[0]])
 				.range([margin,height - margin]);
 
 			rScale = d3.scaleLinear()
