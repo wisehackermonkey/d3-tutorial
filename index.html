@@ -57,6 +57,12 @@
 				console.log(error);
 			}
 
+			//bring the orange cicles to the front
+			//aka draw the orange cicles on top 
+			d = d.sort(function(a, b) {
+				//sort: make zeros first in list 
+				return a.charles - b.charles; 
+			});
 
 			//show table form of csv file
 			//console.table(d);
@@ -93,6 +99,9 @@
 			rScale = d3.scaleLinear()
 				.domain([rMinMax[0],rMinMax[1]])
 				.range([2,10]);
+			cScale = d3.scaleLinear()
+				.domain([0,1])
+				.range(['#333', '#FF6600']);
 
 			//add circles based on the csv file's
 			//'poor' column and 'nox' column
@@ -111,8 +120,16 @@
 				.attr('r', function(d) { 
 					return rScale(d.value); 
 				})
-				.attr('fill', '#000')
-				.style('opacity', '0.5');
+				.attr('fill', function(d) {
+				 return cScale(d.charles); 
+				})
+				.style('opacity', function(d) {
+				//make circles that are near the chales river(number = 1)
+				//to stand out (ex opacity = 0) if not
+				//then set all the other circles to 
+				//20% opacity 
+					return d.charles == 1 ? 1 : 0.2; 
+				});
 
 		});
 	</script>
