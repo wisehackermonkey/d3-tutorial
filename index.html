@@ -21,6 +21,13 @@
     		margin:	50px auto;
     		border: solid 1px #000;
     	}
+    	#title{
+    		background-color: #616161;
+    		width: 600px;
+    		height: 60px;
+    		margin:	27px auto;
+    		border: solid 1px #000;
+    	}
     	svg{
     		background-color: #fff;
     	}
@@ -28,15 +35,25 @@
     		stroke: #000;
     		stroke-width: 1px;
     	}
+    	.titleLable{
+            fill: #000;
+            font: arial;
+            font-size: 30px;
+        }
     </style>
 </head>
 <body>
-
+	<div id="title"></div>
 	<div id="chart"></div>
 	<script type="text/javascript">
 		var width = 1000;
 		var height = 500;
+		var wtitle = 600;
+		var htitle = 60;
 		var margin = 30;
+		var radious = 20;
+		var animation = 20;// animation time multiplyer n x amimation =   millesconds 
+
 
 		var circle;
 
@@ -46,7 +63,18 @@
 			.append('svg')
 			.attr('width', `${width}px`)
 			.attr('height', `${height}px`);
+		var title = d3.select('#title')
+			.append('svg')
+			.attr('width', `${wtitle}px`)
+			.attr('height', `${htitle}px`)
+			.style('fill', '#616161');
 
+		title.append('text')
+                .attr('x', 0)
+                .attr('y', htitle - 20)
+                .attr('text-anchor', 'right')
+                .attr('class', 'titleLable')
+                .text('Boston Housing : # of rooms vs % of poor people');
 
 
 
@@ -98,7 +126,7 @@
 
 			rScale = d3.scaleLinear()
 				.domain([rMinMax[0],rMinMax[1]])
-				.range([2,10]);
+				.range([2,radious]);
 			cScale = d3.scaleLinear()
 				.domain([0,1])
 				.range(['#333', '#FF6600']);
@@ -118,7 +146,13 @@
 				 return yScale(d.rooms); 
 				})
 				.attr('r', function(d) { 
-					return rScale(d.value); 
+					//when page loads 
+					//make the circles invisable
+					//and wait for update() to make them
+					//the approprate size
+					return 0; 
+
+					// return rScale(d.value); 
 				})
 				.attr('fill', function(d) {
 				 return cScale(d.charles); 
@@ -129,9 +163,68 @@
 				//then set all the other circles to 
 				//20% opacity 
 					return d.charles == 1 ? 1 : 0.2; 
-				});
+				})
+				.on('mouseover',function(d){
+					html = `
+					X | poor: ${d.poor}<br/>
+					Y | rooms: ${d.rooms}<br/>
+					R | value: ${d.value}<br/>
+					C | charles: ${d.charles}<br/>`;
+					//how to get current location of mouse
+                    d3.select('#title')
+                        .style('left', d3.event.pageX - 100)
+                        .style('top', d3.event.pageY - 140)
+                        .html(html)
+                        .style('opacity', 0.85);
+                })
+                //when mouse leave the item's aria make invisable
+                .on('mouseout', function(){
+                    d3.select('#title')
+                        //.style('left', -1000)
+                        .style('opacity',0);
+                });
+
+				var x_mid_point = (xMinMax[0] + xMinMax[1])/2;
+				var y_mid_point = (yMinMax[0] + yMinMax[1])/2;
+
+				//give d3 axis the range(or domain) of the numbers 
+				xAxis = d3.axisBottom(xScale).tickValues([xMinMax[0] , x_mid_point, xMinMax[1]]);
+
+				//draw left hand side Scale Axis
+				yAxis = d3.axisLeft(yScale).tickValues([yMinMax[0] , y_mid_point, yMinMax[1]]);
+
+				// Group the axis labels and the tick marks
+				//so they move with eachother
+				xAxisG = svg.append('g')
+					.attr('id', 'xAxis')
+					.attr('class', 'axis');
+
+				yAxisG = svg.append('g')
+					.attr('id', 'yAxis')
+					.attr('class', 'axis');
+
+				//add the Axis the svg
+				xAxisG.call(xAxis)
+				.attr('transform', `translate(0,${(height - margin)})`);
+				
+				yAxisG.call(yAxis)
+				.attr('transform', `translate(30,0)`);
+
+
+				//animate the circles so they have 
+				//a stagared delay
+				update();
 
 		});
+
+		function update() {
+			circle.transition()
+				.delay(function(d, i) { return i * animation; })
+				.attr('r', function(d) { return rScale(d.value); })
+				.attr('fill', function(d) {
+					return cScale(d.charles); 
+				});
+		}
 	</script>
 </body>
 </html>
